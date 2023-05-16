@@ -37,7 +37,6 @@ def main():
         try:
             logger.info("Making request to Devman API...")
             data = get_new_attempts(dvmn_api_token, last_timestamp)
-            print(data)
             logger.info("Got response from Devman API.")
 
             if data['status'] == 'found':
