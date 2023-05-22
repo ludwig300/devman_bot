@@ -36,11 +36,11 @@ def main():
     while True:
         try:
             logger.info("Making request to Devman API...")
-            data = get_new_attempts(dvmn_api_token, last_timestamp)
+            attempts = get_new_attempts(dvmn_api_token, last_timestamp)
             logger.info("Got response from Devman API.")
 
-            if data['status'] == 'found':
-                new_attempts = data['new_attempts']
+            if attempts['status'] == 'found':
+                new_attempts = attempts['new_attempts']
                 for attempt in new_attempts:
                     is_negative = attempt['is_negative']
                     lesson_title = attempt['lesson_title']
@@ -52,7 +52,7 @@ def main():
                     logger.info("Sent message to Telegram.")
                     last_timestamp = attempt['timestamp']
             else:
-                last_timestamp = data['timestamp_to_request']
+                last_timestamp = attempts['timestamp_to_request']
 
             time.sleep(5)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
