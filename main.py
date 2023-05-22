@@ -54,9 +54,9 @@ def main():
             else:
                 last_timestamp = attempts['timestamp_to_request']
 
-            time.sleep(5)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
             logger.exception("An error occurred while making request to Devman API.")
+            time.sleep(600)
         except Exception as e:
             logger.exception("An unexpected error occurred.")
             break
