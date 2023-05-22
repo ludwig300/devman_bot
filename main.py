@@ -6,6 +6,9 @@ import requests
 from dotenv import load_dotenv
 from telegram import Bot
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("Devman Bot")
+
 
 def get_new_attempts(token, timestamp=None):
     dvmn_url = "https://dvmn.org/api/long_polling/"
@@ -21,13 +24,10 @@ def get_new_attempts(token, timestamp=None):
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger("Devman Bot")
-
     load_dotenv()
 
     tg_token = os.environ['TG_TOKEN']
-    chat_id = os.environ['CHAT_ID']
+    tg_chat_id = os.environ['TG_CHAT_ID']
     dvmn_api_token = os.environ['DVMN_API_TOKEN']
 
     bot = Bot(token=tg_token)
@@ -46,7 +46,7 @@ def main():
                     lesson_title = attempt['lesson_title']
                     lesson_url = attempt['lesson_url']
                     bot.send_message(
-                        chat_id=chat_id,
+                        chat_id=tg_chat_id,
                         text=f"Урок '{lesson_title}' проверен. Результат: {'неудачно' if is_negative else 'успешно'}. Ссылка на урок {lesson_url}",
                     )
                     logger.info("Sent message to Telegram.")
