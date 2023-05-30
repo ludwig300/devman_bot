@@ -6,7 +6,6 @@ import requests
 from dotenv import load_dotenv
 from telegram import Bot
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("Devman Bot")
 
 
@@ -24,6 +23,7 @@ def get_new_attempts(token, timestamp=None):
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
     load_dotenv()
 
     tg_token = os.environ['TG_TOKEN']
@@ -57,6 +57,7 @@ def main():
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
             logger.exception("An error occurred while making request to Devman API.")
             time.sleep(600)
+            pass
         except Exception as e:
             logger.exception("An unexpected error occurred.")
             break
