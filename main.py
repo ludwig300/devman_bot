@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 
 import requests
 from dotenv import load_dotenv
@@ -16,7 +17,7 @@ def get_new_attempts(token, timestamp=None):
     params = {
         "timestamp": timestamp,
     }
-    response = requests.get(dvmn_url, headers=headers, params=params, timeout=600)
+    response = requests.get(dvmn_url, headers=headers, params=params, timeout=60)
     response.raise_for_status()
     return response.json()
 
@@ -54,9 +55,10 @@ def main():
                 last_timestamp = attempts['timestamp_to_request']
 
         except requests.exceptions.ReadTimeout:
-            logger.info("Read timeout occurred. The server did not respond in a timely manner. Retrying in 10 minutes...")
+            logger.info("Read timeout occurred. The server did not respond in a timely manner. Retrying immediately")
         except requests.exceptions.ConnectionError:
-            logger.info("A connection error occurred. Please check the network connection.")
+            logger.info("A connection error occurred. Please check the network connection. Retrying in 10 minutes...")
+            time.sleep(600)
         except Exception:
             logger.exception("An unexpected error occurred.")
             break
