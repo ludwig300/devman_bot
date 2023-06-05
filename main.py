@@ -1,6 +1,5 @@
 import logging
 import os
-import time
 
 import requests
 from dotenv import load_dotenv
@@ -17,7 +16,7 @@ def get_new_attempts(token, timestamp=None):
     params = {
         "timestamp": timestamp,
     }
-    response = requests.get(dvmn_url, headers=headers, params=params)
+    response = requests.get(dvmn_url, headers=headers, params=params, timeout=60)
     response.raise_for_status()
     return response.json()
 
@@ -56,9 +55,8 @@ def main():
 
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
             logger.info("Connection error occurred, retrying in 10 minutes.")
-            time.sleep(600)
 
-        except Exception as e:
+        except Exception:
             logger.exception("An unexpected error occurred.")
             break
 
