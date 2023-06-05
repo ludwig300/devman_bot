@@ -16,7 +16,7 @@ def get_new_attempts(token, timestamp=None):
     params = {
         "timestamp": timestamp,
     }
-    response = requests.get(dvmn_url, headers=headers, params=params, timeout=60)
+    response = requests.get(dvmn_url, headers=headers, params=params, timeout=600)
     response.raise_for_status()
     return response.json()
 
@@ -36,7 +36,7 @@ def main():
         try:
             logger.info("Making request to Devman API...")
             attempts = get_new_attempts(dvmn_api_token, last_timestamp)
-            logger.info("Got response from Devman API.")
+            logger.info("Received response from Devman API.")
 
             if attempts['status'] == 'found':
                 new_attempts = attempts['new_attempts']
@@ -53,9 +53,10 @@ def main():
             else:
                 last_timestamp = attempts['timestamp_to_request']
 
-        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
-            logger.info("Connection error occurred, retrying in 10 minutes.")
-
+        except requests.exceptions.ReadTimeout:
+            logger.info("Read timeout occurred. The server did not respond in a timely manner. Retrying in 10 minutes...")
+        except requests.exceptions.ConnectionError:
+            logger.info("A connection error occurred. Please check the network connection.")
         except Exception:
             logger.exception("An unexpected error occurred.")
             break
