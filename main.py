@@ -6,7 +6,16 @@ import requests
 from dotenv import load_dotenv
 from telegram import Bot
 
-logger = logging.getLogger("Devman Bot")
+
+class TelegramHandler(logging.Handler):
+    def __init__(self, bot, chat_id, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bot = bot
+        self.chat_id = chat_id
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.bot.send_message(chat_id=self.chat_id, text=log_entry)
 
 
 def get_new_attempts(token, timestamp=None):
@@ -17,20 +26,38 @@ def get_new_attempts(token, timestamp=None):
     params = {
         "timestamp": timestamp,
     }
-    response = requests.get(dvmn_url, headers=headers, params=params, timeout=60)
+    response = requests.get(
+        dvmn_url,
+        headers=headers,
+        params=params,
+        timeout=60
+    )
     response.raise_for_status()
     return response.json()
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
     load_dotenv()
 
-    tg_token = os.environ['TG_TOKEN']
-    tg_chat_id = os.environ['TG_CHAT_ID']
-    dvmn_api_token = os.environ['DVMN_API_TOKEN']
+    tg_token = os.getenv('TG_TOKEN')
+    tg_chat_id = os.getenv('TG_CHAT_ID')
+    dvmn_api_token = os.getenv('DVMN_API_TOKEN')
 
     bot = Bot(token=tg_token)
+
+    logger = logging.getLogger("Devman Bot")
+    logger.setLevel(logging.INFO)
+
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    tg_handler = TelegramHandler(bot, tg_chat_id)
+    tg_handler.setLevel(logging.ERROR)
+    tg_handler.setFormatter(formatter)
+
+    logger.addHandler(tg_handler)
+
     last_timestamp = None
 
     while True:
@@ -55,13 +82,12 @@ def main():
                 last_timestamp = attempts['timestamp_to_request']
 
         except requests.exceptions.ReadTimeout:
-            logger.info("Read timeout occurred. The server did not respond in a timely manner. Retrying immediately")
+            logger.warning("Read timeout occurred. The server did not respond in a timely manner. Retrying immediately")
         except requests.exceptions.ConnectionError:
-            logger.info("A connection error occurred. Please check the network connection. Retrying in 10 minutes...")
+            logger.warning("A connection error occurred. Please check the network connection. Retrying in 10 minutes...")
             time.sleep(600)
         except Exception:
             logger.exception("An unexpected error occurred.")
-            break
 
 
 if __name__ == "__main__":
