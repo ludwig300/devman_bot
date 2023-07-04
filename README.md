@@ -7,7 +7,7 @@
 1. Клонируйте репозиторий с проектом:
 
 ```bash
->git clone https://github.com/ludwig300/devman_bot
+>git clone git@github.com:ludwig300/devman_bot.git
 ```
 
 2. Создайте и активируйте виртуальное окружение:
@@ -30,11 +30,14 @@
 
 ```
 TG_TOKEN=your_value
+LOGGING_BOT_TOKEN=your_value
 TG_CHAT_ID=your_value
 DVMN_API_TOKEN=your_value
 ```
 
-`TG_TOKEN` - это токен вашего бота в Telegram, `TG_CHAT_ID` - идентификатор вашего чата в Telegram, `DVMN_API_TOKEN` - это токен вашего аккаунта на Devman.
+`TG_TOKEN`  и `LOGGING_BOT_TOKEN` - это токены ваших ботов в Telegram, `TG_CHAT_ID `- идентификатор вашего чата в Telegram,
+
+`DVMN_API_TOKEN` - это токен вашего аккаунта на Devman.
 
 ## Запуск
 
