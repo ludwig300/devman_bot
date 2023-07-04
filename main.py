@@ -53,7 +53,7 @@ def main():
     )
 
     tg_handler = TelegramHandler(bot, tg_chat_id)
-    tg_handler.setLevel(logging.ERROR)
+    tg_handler.setLevel(logging.INFO)
     tg_handler.setFormatter(formatter)
 
     logger.addHandler(tg_handler)
