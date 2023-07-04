@@ -59,12 +59,12 @@ def main():
     logger.addHandler(tg_handler)
 
     last_timestamp = None
-
+    logger.info("Бот запущен")
     while True:
         try:
-            logger.info("Making request to Devman API...")
+            logger.debug("Making request to Devman API...")
             attempts = get_new_attempts(dvmn_api_token, last_timestamp)
-            logger.info("Received response from Devman API.")
+            logger.debug("Received response from Devman API.")
 
             if attempts['status'] == 'found':
                 new_attempts = attempts['new_attempts']
@@ -81,8 +81,8 @@ def main():
             else:
                 last_timestamp = attempts['timestamp_to_request']
 
-        except requests.exceptions.ReadTimeout:
-            logger.warning("Read timeout occurred. The server did not respond in a timely manner. Retrying immediately")
+        except requests.exceptions.ReadTimeout: 
+            logger.debug("Read timeout occurred. The server did not respond in a timely manner. Retrying immediately")
         except requests.exceptions.ConnectionError:
             logger.warning("A connection error occurred. Please check the network connection. Retrying in 10 minutes...")
             time.sleep(600)
