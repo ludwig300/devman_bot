@@ -8,9 +8,9 @@ from telegram import Bot
 
 
 class TelegramHandler(logging.Handler):
-    def __init__(self, bot, chat_id, *args, **kwargs):
+    def __init__(self, tg_bot_token, chat_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.bot = bot
+        self.bot = Bot(token=tg_bot_token)
         self.chat_id = chat_id
 
     def emit(self, record):
@@ -45,6 +45,7 @@ def main():
 
     bot = Bot(token=tg_token)
 
+    logging_bot_token = os.getenv('LOGGING_BOT_TOKEN')
     logger = logging.getLogger("Devman Bot")
     logger.setLevel(logging.INFO)
 
@@ -52,7 +53,7 @@ def main():
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
 
-    tg_handler = TelegramHandler(bot, tg_chat_id)
+    tg_handler = TelegramHandler(logging_bot_token, tg_chat_id)
     tg_handler.setLevel(logging.INFO)
     tg_handler.setFormatter(formatter)
 
@@ -81,7 +82,7 @@ def main():
             else:
                 last_timestamp = attempts['timestamp_to_request']
 
-        except requests.exceptions.ReadTimeout: 
+        except requests.exceptions.ReadTimeout:
             logger.debug("Read timeout occurred. The server did not respond in a timely manner. Retrying immediately")
         except requests.exceptions.ConnectionError:
             logger.warning("A connection error occurred. Please check the network connection. Retrying in 10 minutes...")
