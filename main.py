@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 from telegram import Bot
 
 
+logger = logging.getLogger("Devman Bot")
+
+
 class TelegramHandler(logging.Handler):
     def __init__(self, tg_bot_token, chat_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,7 +49,6 @@ def main():
     bot = Bot(token=tg_token)
 
     logging_bot_token = os.getenv('LOGGING_BOT_TOKEN')
-    logger = logging.getLogger("Devman Bot")
     logger.setLevel(logging.INFO)
 
     formatter = logging.Formatter(
